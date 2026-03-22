@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Auditoria Operativa — ENDER</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#f5f4f0;
+  --sf:#ffffff;
+  --sf2:#eeece6;
+  --bd:#e0ddd6;
+  --tx:#1a1a1a;
+  --mu:#999690;
+  --green:#2d7a4f;--green-dim:rgba(45,122,79,.1);
+  --red:#c0392b;--red-dim:rgba(192,57,43,.08);
+  --yellow:#c0862b;--yellow-dim:rgba(192,134,43,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+.pg{display:none;min-height:100vh;padding-bottom:90px}
+.pg.on{display:block}
+
+/* HEADER */
+.hdr{background:var(--tx);padding:0 16px;position:sticky;top:0;z-index:200}
+.hdr-brand{display:flex;justify-content:space-between;align-items:center;padding:16px 0 12px}
+.brand-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;font-weight:400;color:#fff;letter-spacing:.08em;line-height:1}
+
+
+.meta-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:12px 12px 0}
+.meta-body .mf{background:var(--sf);border:1.5px solid var(--tx);border-radius:0;padding:8px 11px;transition:border-color .15s}
+.meta-body .mf:focus-within{border-color:var(--tx)}
+.meta-body .mf label{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.12em;font-family:'DM Mono',monospace;display:block;margin-bottom:2px}
+.meta-body .mf select,.meta-body .mf input{background:none;border:none;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;width:100%;outline:none;cursor:pointer;padding:0}
+.meta-body .mf select option{background:var(--sf);color:var(--tx)}
+/* HAMBURGUESA */
+.hmb{background:none;border:1.5px solid rgba(255,255,255,.3);border-radius:3px;width:38px;height:38px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0;flex-shrink:0}
+.hmb span{display:block;width:16px;height:1.5px;background:#fff;border-radius:1px}
+/* MENU DROPDOWN */
+.dropdown{position:fixed;top:60px;left:0;right:0;background:var(--tx);z-index:99;display:none;flex-direction:column;padding:0}
+.dropdown.open{display:flex}
+.dd-item{background:none;border:none;border-top:1px solid rgba(255,255,255,.08);color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;padding:16px 20px;cursor:pointer;display:flex;align-items:center;gap:12px;text-align:left;letter-spacing:.04em;text-transform:uppercase;width:100%}
+.dd-item:active{background:rgba(255,255,255,.06)}
+.mf:focus-within{border-color:rgba(255,255,255,.35)}
+.mf label{font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.12em;font-family:'DM Mono',monospace;display:block;margin-bottom:2px}
+.mf select,.mf input{background:none;border:none;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;width:100%;outline:none;cursor:pointer;padding:0}
+.mf select option{background:var(--tx);color:#fff}
+
+
+/* BLOQUES */
+.blq{margin:12px 12px 0}
+.btt{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.1em;padding:14px 2px 8px;display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid var(--tx);margin-bottom:8px}
+.bpts{font-family:'DM Mono',monospace;background:var(--tx);color:#fff;padding:3px 9px;border-radius:20px;font-size:9px}
+
+/* SECCIONES */
+.sec{margin-bottom:22px;border-radius:0;overflow:hidden;border:1.5px solid var(--tx);background:var(--sf)}
+.sh{padding:13px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;gap:8px;background:var(--sf)}
+.sl{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.sd{width:6px;height:6px;background:var(--tx);flex-shrink:0}
+.st{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-family:'DM Sans',sans-serif}
+.ss{font-size:10px;color:var(--mu);margin-top:1px}
+.sr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.sc{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--mu);background:var(--sf2);padding:3px 8px;border-radius:3px;border:1px solid var(--bd)}
+.sc.ok{background:var(--green-dim);color:var(--green);border-color:rgba(45,122,79,.2)}
+.sc.md{background:var(--yellow-dim);color:var(--yellow);border-color:rgba(192,134,43,.2)}
+.sc.bd{background:var(--red-dim);color:var(--red);border-color:rgba(192,57,43,.15)}
+.cv{color:var(--mu);font-size:11px;transition:transform .2s;display:inline-block}
+.cv.op{transform:rotate(180deg)}
+.sb{background:var(--sf);border-top:1px solid var(--bd)}
+.sb.col{display:none}
+
+/* ITEMS */
+.itm{padding:12px 14px;border-top:1px solid var(--bd);display:flex;align-items:flex-start;gap:8px;background:var(--sf)}
+.bb{height:32px;padding:0 8px;min-width:0;border-radius:3px;border:1.5px solid var(--bd);background:var(--sf);cursor:pointer;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .12s;color:var(--mu);flex-shrink:0;letter-spacing:.02em;text-transform:uppercase}.it{flex:1;min-width:0}
+.il{font-size:13px;line-height:1.45;font-weight:500}
+.is{font-size:10px;color:var(--mu);line-height:1.4;margin-top:2px}
+
+/* BOOL BUTTONS */
+.bg{display:flex;gap:4px;flex-shrink:0}
+.bb{height:36px;padding:0 11px;min-width:44px;border-radius:3px;border:1.5px solid var(--bd);background:var(--sf);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .12s;color:var(--mu);flex-shrink:0;letter-spacing:.04em;text-transform:uppercase}
+.bb:active{transform:scale(.92)}
+.bb.si.on{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+.bb.no.on{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.bb.na.on{background:rgba(154,138,139,.1);border-color:var(--mu);color:var(--mu)}
+
+/* ESCALA 1-10 */
+.sk{display:flex;gap:2px;flex-shrink:0;align-items:center}
+.sbb{width:24px;height:36px;border-radius:3px;border:1.5px solid var(--bd);background:var(--sf);cursor:pointer;font-size:10px;font-family:'DM Mono',monospace;font-weight:500;display:flex;align-items:center;justify-content:center;transition:all .12s;color:var(--mu);flex-shrink:0}
+.sbb:active{transform:scale(.9)}
+.sbb.lo{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.sbb.mi{background:var(--yellow-dim);border-color:var(--yellow);color:var(--yellow)}
+.sbb.hi{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+
+/* HINTS Y NOTAS */
+.nw{padding:0 14px 12px;background:var(--sf);border-top:1px solid var(--bd)}
+.nl{font-size:9px;color:var(--mu);font-family:'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding-top:10px;margin-bottom:5px;display:block}
+.ni{width:100%;background:var(--sf2);border:1.5px solid var(--bd);border-radius:3px;padding:9px 11px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:13px;resize:none;outline:none;min-height:50px;transition:border-color .15s}
+.ni:focus{border-color:var(--tx)}
+.ni::placeholder{color:var(--mu)}
+
+
+
+/* RESULTADO */
+.res{margin:14px 12px 0;background:var(--sf);border:1.5px solid var(--tx);border-radius:0;overflow:hidden}
+.rh{padding:11px 15px;border-bottom:1.5px solid var(--tx);font-size:9px;font-family:'DM Mono',monospace;letter-spacing:.2em;color:var(--mu);text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+.rb{display:flex;flex-direction:column}
+.bc{background:var(--sf);padding:11px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd)}
+.bc:last-child{border-bottom:none}
+.bn{font-size:11px;color:var(--mu);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.br{display:flex;align-items:baseline;gap:3px}
+.bs{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--mu)}
+.bm{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu)}
+.bs.ok{color:var(--green)}.bs.md{color:var(--yellow)}.bs.bd2{color:var(--red)}
+.total-row{padding:15px;display:flex;justify-content:space-between;align-items:center;border-top:1.5px solid var(--tx);background:var(--tx)}
+.tl{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.1em;color:#fff}
+.ts{font-family:'DM Mono',monospace;font-size:36px;font-weight:700;color:#fff}
+.ts.ve{color:#6fcf97}.ts.am{color:#f2c94c}.ts.ro{color:#eb5757}
+
+/* ACCIONES */
+.ac{padding:12px 12px 16px;display:flex;flex-direction:column;gap:8px}
+.bp{width:100%;padding:16px;background:var(--tx);color:#fff;border:none;border-radius:0;font-family:'Bebas Neue',sans-serif;font-size:18px;font-weight:400;cursor:pointer;letter-spacing:.12em;transition:all .15s}
+.bp:active{opacity:.8}
+.bse{width:100%;padding:13px;background:var(--sf);color:var(--tx);border:1.5px solid var(--tx);border-radius:0;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s;letter-spacing:.04em;text-transform:uppercase}
+.bse:active{background:var(--sf2)}
+
+
+
+.tb{display:flex;gap:5px;padding:12px 12px 4px}
+.tbt{flex:1;padding:9px;border-radius:0;border:1.5px solid var(--bd);background:var(--sf);color:var(--mu);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;cursor:pointer;transition:all .12s;letter-spacing:.06em;text-transform:uppercase}
+.tbt.on{background:var(--tx);color:#fff;border-color:var(--tx)}
+.rc{padding:0 12px 12px}
+.rcd{background:var(--sf);border:1.5px solid var(--tx);border-radius:0;overflow:hidden;margin-bottom:10px}
+.rcdh{padding:13px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid var(--tx);background:var(--tx)}
+.rcdt{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.1em;color:#fff}
+.rcds{font-family:'DM Mono',monospace;font-size:26px;font-weight:700;color:#fff}
+.rcds.ve{color:#6fcf97}.rcds.am{color:#f2c94c}.rcds.ro{color:#eb5757}
+.bw{padding:10px 15px 12px;background:var(--sf)}
+.br2{margin-bottom:7px}
+.bl{display:flex;justify-content:space-between;font-size:10px;color:var(--mu);margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.bbg{height:5px;background:var(--sf2);border-radius:0;overflow:hidden;border:1px solid var(--bd)}
+.bf{height:100%;border-radius:0;transition:width .4s}
+.hist-hdr{padding:7px 15px 3px;font-size:9px;color:rgba(255,255,255,.5);font-weight:700;text-transform:uppercase;letter-spacing:.12em;border-top:1px solid rgba(255,255,255,.1);background:var(--tx);font-family:'DM Mono',monospace}
+.hr{padding:11px 15px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;background:var(--sf)}
+.hf{font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif}
+.hm{font-size:10px;color:var(--mu);margin-top:1px;text-transform:uppercase;letter-spacing:.04em}
+.hs{font-family:'DM Mono',monospace;font-size:18px;font-weight:700}
+.hs.ve{color:var(--green)}.hs.am{color:var(--yellow)}.hs.ro{color:var(--red)}
+.db{background:none;border:none;color:var(--red);font-size:11px;cursor:pointer;padding:3px 6px;opacity:.5;margin-left:6px;font-weight:600}
+.em{text-align:center;padding:44px 20px;color:var(--mu);font-size:13px;line-height:1.7}
+.em strong{color:var(--tx)}
+.cg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:0 12px 10px}
+.cc{background:var(--sf);border:1.5px solid var(--tx);border-radius:0;overflow:hidden}
+.cch{padding:11px 10px 9px;border-bottom:1.5px solid var(--tx);text-align:center;background:var(--tx)}
+.ccn{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.08em;color:#fff;line-height:1.2}
+.ccs{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;display:block;margin-top:4px;color:#fff}
+.ccs.ve{color:#6fcf97}.ccs.am{color:#f2c94c}.ccs.ro{color:#eb5757}
+.cb{padding:6px 10px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;background:var(--sf)}
+.cbn{font-size:9px;color:var(--mu);line-height:1.3;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.cbv{font-family:'DM Mono',monospace;font-size:10px;font-weight:700}
+.tw{padding:4px 12px 16px}
+.tt{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--tx);padding:14px 0 10px}
+.trow{margin-bottom:10px}
+.tlbl{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;font-weight:600}
+
+/* MRB SCALE COLORS */
+.bb.mrb-1.on{background:rgba(192,57,43,.1);border-color:#c0392b;color:#c0392b}
+.bb.mrb-2.on{background:rgba(211,84,0,.1);border-color:#d35400;color:#d35400}
+.bb.mrb-3.on{background:rgba(192,134,43,.12);border-color:#c0862b;color:#c0862b}
+.bb.mrb-4.on{background:rgba(39,174,96,.1);border-color:#27ae60;color:#27ae60}
+.bb.mrb-5.on{background:rgba(45,122,79,.12);border-color:#2d7a4f;color:#2d7a4f}
+</style>
+</head>
+<body>
+
+<!-- PANTALLA AUDITORIA -->
+<div id="p1" class="pg on">
+<div class="hdr">
+  <div class="hdr-brand">
+    <div>
+      <div class="brand-logo">ENDER<span>.</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="hmb" id="hmb" onclick="toggleMenu()" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="meta-body">
+  <div class="mf"><label>Local</label>
+    <select id="sl"><option value="">--</option><option>ENDER Quilmes</option><option>ENDER Bernal</option><option>ENDER Berazategui</option></select>
+  </div>
+  <div class="mf"><label>Fecha</label><input type="date" id="fe"></div>
+  <div class="mf"><label>Turno</label>
+    <select id="tu"><option value="">--</option><option>Mediodia</option><option>Noche</option></select>
+  </div>
+</div>
+<div id="ab"></div>
+<div class="res">
+  <div class="rh"><span>Resultado</span><span style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--tx);letter-spacing:.1em">ENDER</span></div>
+  <div class="rb" id="rb"></div>
+  <div class="total-row"><span class="tl">Puntaje total</span><span class="ts ro" id="td">-- / 100</span></div>
+</div>
+<div class="ac">
+  <button class="bp" id="bgrd" onclick="guardar()">Guardar auditoría</button>
+  
+  
+</div>
+</div>
+
+
+<!-- PANTALLA RESULTADOS -->
+<div id="p2" class="pg">
+  <div class="hdr">
+    <div class="hdr-brand">
+      <div>
+        <div class="brand-logo">ENDER<span>.</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="hmb" onclick="toggleMenu()" aria-label="Menú">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="tb">
+    <button class="tbt on" id="tl" onclick="showTab('l')">Por local</button>
+    <button class="tbt" id="tc" onclick="showTab('c')">Comparativa</button>
+  </div>
+  <div id="vl"></div>
+  <div id="vc" style="display:none"></div>
+</div>
+
+<!-- MENU DESPLEGABLE GLOBAL -->
+<div class="dropdown" id="dropdown">
+  <button class="dd-item" id="dd-auditoria" onclick="goA()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    Auditoría
+  </button>
+  <button class="dd-item" id="dd-resultados" onclick="goR()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    Resultados
+  </button>
+</div>
+
+<script>
+var D = [
+  {id:'desempeno',tt:'Desempeño operativo',w:40,cl:'#f5a623',secs:[
+    {id:'planchero',tt:'Planchero',its:[
+      {id:'pl1',lb:'Manejo de temperatura de plancha',sb:'Regula según el volumen del servicio',t:'m',w:3},
+      {id:'pl3',lb:'Aplicación de técnica smash',sb:'Presión firme en un solo movimiento',t:'m',w:4},
+      {id:'pl2',lb:'Raspado de superficie de plancha entre tandas',sb:'Sin que se lo recuerden',t:'m',w:2},
+      {id:'pl4',lb:'Control del límite de bolitas por plancha',sb:'Máximo 18 por plancha',t:'b',w:2,na:1},
+      {id:'pl6',lb:'Traslado de medallones en bandeja',t:'b',w:1},
+      {id:'pl5',lb:'Velocidad de desempeño',t:'m',w:1}
+    ]},
+    {id:'armador',tt:'Armador',its:[
+      {id:'ar1',lb:'Calidad de corte y tostado de panes',sb:'Parejo, con manteca clarificada, caliente',t:'m',w:4},
+      {id:'ar2',lb:'Prolijidad y medida de toppings',sb:'Sin exceso ni faltante, dentro del pan',t:'m',w:3},
+      {id:'ar3',lb:'Prolijidad de envoltorio y etiqueta',t:'m',w:2},
+      {id:'ar5',lb:'Acumulación de panes tostados en baja demanda',t:'b',w:1,na:1},
+      {id:'ar4',lb:'Velocidad de desempeño',t:'m',w:1}
+    ]},
+    {id:'freidor',tt:'Freidor',its:[
+      {id:'fr2',lb:'Escurrido de canastos de freidora',sb:'Sin chorrear aceite al trasladar',t:'b',w:2},
+      {id:'fr4',lb:'Manipulación de productos con pinza',sb:'Nunca con la mano al sacar de freidora',t:'b',w:1,na:1},
+      {id:'fr6',lb:'Calidad de rebozado de Supremas/Chicken Bites',sb:'Cobertura pareja, sin exceso ni faltante de harina',t:'m',w:3,na:1},
+      {id:'fr5',lb:'Velocidad de desempeño',t:'m',w:2}
+    ]},
+    {id:'runner',tt:'Runner',its:[
+      {id:'ru0',lb:'Prolijidad de empaquetado',sb:'Nombre, carita feliz, dobles de bolsa, posición de comanda',t:'m',w:2},
+      {id:'ru1',lb:'Preparación anticipada de bolsas, salsas y extras',sb:'Antes de que el pedido esté listo',t:'m',w:1},
+      {id:'ru2',lb:'Guardado de productos en presentación correcta',sb:'Salón en bandeja / delivery en caja y bolsa',t:'b',w:1},
+      {id:'ru3',lb:'Control del pedido antes de ser guardado/entregado',t:'b',w:2},
+      {id:'ru4',lb:'Velocidad de desempeño',t:'m',w:1}
+    ]},
+    {id:'produccion',tt:'Producción y mise en place',its:[
+      {id:'pr1',lb:'Etiquetado y control de vencimientos',sb:'Producción, descongelados, bolsas pollo/bites',t:'b',w:2},
+      {id:'pr2',lb:'Vegetales en condición',sb:'Lechuga y tomate frescos, limpios y listos',t:'b',w:1},
+      {id:'pr3',lb:'Panceta: punto de cocción',sb:'Ni demasiado crocante ni gomosa',t:'s',w:1},
+      {id:'pr4',lb:'Mamaderas limpias',t:'b',w:1}
+    ]}
+  ]},
+  {id:'limp_coc',tt:'Limpieza cocina',w:15,cl:'#4ade80',hint:'Limpieza de estacion evaluada en tiempos muertos durante el servicio',secs:[
+    {id:'lp',tt:'Planchero — estación',its:[
+      {id:'lp2',lb:'Guardado de smasher, espátulas, scraper, salero en su lugar correspondiente',t:'b',w:4},
+      {id:'lp3',lb:'Limpieza del puesto entre tandas/tiempos muertos',sb:'Borde de plancha, superficie de heladera, grasero y bandejas para carnes',t:'m',w:2}
+    ]},
+    {id:'la',tt:'Armador - estacion',its:[
+      {id:'la1',lb:'Limpieza del puesto entre tandas/tiempos muertos',sb:'Mesada de armado y panes, regla de panes',t:'m',w:8}
+    ]},
+    {id:'lf',tt:'Freidor - estacion',its:[
+      {id:'lf2',lb:'Limpieza del puesto entre tandas/tiempos muertos',sb:'Bordes de freidoras, mantenedor, mesada de pollo',t:'m',w:2},
+      {id:'lf4',lb:'Traslado del pollo a estación de armado con bandeja y pinza',t:'b',w:1},
+      {id:'lf5',lb:'Limpieza del aceite cuando hay restos en superficie',t:'b',w:1}
+    ]},
+    {id:'cg',tt:'Cocina general',sb:'Superficies compartidas',its:[
+      {id:'cg1',lb:'Limpieza de pisos',sb:'Todos los pisos de cocina',t:'m',w:1},
+      {id:'cg2',lb:'Tachos sin desbordamiento',t:'b',w:1},
+      {id:'cg3',lb:'Estación de lavado limpia y ordenada',t:'m',w:1},
+      {id:'cg4',lb:'Mesadas/estantes generales limpios y ordenados',t:'m',w:1},
+      {id:'cg5',lb:'Orden general',sb:'Cada cosa en su lugar',t:'m',w:1}
+    ]}
+  ]},
+  {id:'limp_loc',tt:'Limpieza local',w:15,cl:'#c084fc',secs:[
+    {id:'sc',tt:'Salón — comportamientos',sb:'Acciones observables durante el servicio',its:[
+      {id:'sc1',lb:'Limpieza de mesas vacías a tiempo',t:'m',w:5,na:1},
+      {id:'sc2',lb:'Cantidad de bandejas/botellas sin acumulación en cestos',t:'m',w:3,na:1}
+    ]},
+    {id:'se',tt:'Salón — estado',sb:'Estado general observable en la visita',its:[
+      {id:'se1',lb:'Frente del local',sb:'Frente, vereda, cordón de calle y cartelería',t:'m',w:1,na:1},
+      {id:'se2',lb:'Salón planta baja',sb:'Pisos, cestos de residuos, artículos sobre pared',t:'m',w:1,na:1},
+      {id:'se3',lb:'Patio/Terraza',sb:'Piso, cestos de residuos',t:'m',w:1,na:1},
+      {id:'se4',lb:'Mostrador',sb:'Piso, heladera de bebidas, mostrador',t:'m',w:1,na:1},
+      {id:'se5',lb:'Cafetería',sb:'Equipamiento, mostrador/mesada, bacha',t:'m',w:1,na:1}
+    ]},
+    {id:'bn',tt:'Baños',sb:'Inodoros, lavamanos, espejos, accesorios, pisos',its:[
+      {id:'bn1',lb:'Baño clientes',sb:'Lavamanos, inodoros, pisos, dispensers cargados, cestos sin desbordamiento',t:'m',w:3,na:1},
+      {id:'bn2',lb:'Baño empleados',sb:'Lavamanos, inodoros, pisos, dispensers cargados, cestos sin desbordamiento',t:'m',w:2,na:1}
+    ]}
+  ]},
+  {id:'atencion',tt:'Atención al cliente',w:30,cl:'#60a5fa',secs:[
+    {id:'tp',tt:'Toma del pedido',sb:'Primer contacto con el cliente',its:[
+      {id:'at2',lb:'Contacto visual y sonrisa al cliente',t:'m',w:4,na:1},
+      {id:'at3',lb:'Cordialidad y actitud en la toma del pedido',t:'m',w:6,na:1},
+      {id:'at4',lb:'Orientación al cliente indeciso',sb:'Sugiere opciones y explica el menú',t:'b',w:3,na:1},
+      {id:'at7',lb:'Ofrecimiento de servicio a la mesa cuando la situación lo amerita',sb:'Adultos mayores, embarazadas, etc.',t:'b',w:2,na:1}
+    ]},
+    {id:'en',tt:'Entrega del pedido',sb:'Segundo punto de contacto',its:[
+      {id:'at5',lb:'Cordialidad y contacto visual en la entrega del pedido',t:'m',w:7,na:1},
+      {id:'at6',lb:'Ofrecimiento de aderezos y cantidad',sb:'Adultos mayores, embarazadas, personas con movilidad reducida',t:'b',w:3,na:1}
+    ]},
+    {id:'dp',tt:'Despedida',sb:'Tercer punto de contacto',its:[
+      {id:'at8',lb:'Consulta al cliente sobre su experiencia',sb:'¿Cómo estuvo la comida?',t:'b',w:3,na:1},
+      {id:'at9',lb:'Saludo y agradecimiento al cliente al despedirse',t:'b',w:2,na:1}
+    ]}
+  ]}
+];
+
+// STATE: S[secId][itemId] = null | 1 | 0 | -1 | number
+var S={};
+D.forEach(function(b){b.secs.forEach(function(s){S[s.id]={};s.its.forEach(function(i){S[s.id][i.id]=null;});});});
+
+// BUILD UI
+function build(){
+  var ab=document.getElementById('ab'), rb=document.getElementById('rb');
+  D.forEach(function(b){
+    var bd=document.createElement('div'); bd.className='blq';
+    bd.innerHTML='<div class="btt"><span>'+b.tt+'</span><span class="bpts">'+b.w+' pts</span></div>';
+    if(b.hint){var hd=document.createElement('div');hd.style.cssText='font-size:10px;color:var(--mu);font-style:italic;padding:0 4px 8px;';hd.textContent=b.hint;bd.appendChild(hd);}
+    b.secs.forEach(function(sec){
+      var sd=document.createElement('div'); sd.className='sec';
+      var hdr=document.createElement('div'); hdr.className='sh';
+      hdr.innerHTML='<div class="sl"><div class="sd"></div><div><div class="st">'+sec.tt+'</div>'+(sec.sb?'<div class="ss">'+sec.sb+'</div>':'')+'</div></div><div class="sr"><span class="sc bd" id="sc'+sec.id+'">--</span><span class="cv op" id="cv'+sec.id+'">&#9660;</span></div>';
+      (function(sid){hdr.addEventListener('click',function(){toggleS(sid);});})(sec.id);
+      sd.appendChild(hdr);
+      var sb=document.createElement('div'); sb.className='sb'; sb.id='sb'+sec.id;
+      sec.its.forEach(function(it){
+        var row=document.createElement('div'); row.className='itm';
+        var txt='<div class="it"><div class="il">'+it.lb+'</div>'+(it.sb?'<div class="is">'+it.sb+'</div>':'')+'</div>';
+        if(it.t==='b'){
+          var naBtn=it.na?'<button class="bb na" data-s="'+sec.id+'" data-i="'+it.id+'" data-v="-1" data-b="1">N/A</button>':'';
+          row.innerHTML=txt+'<div class="bg"><button class="bb si" data-s="'+sec.id+'" data-i="'+it.id+'" data-v="1" data-b="1">SI</button><button class="bb no" data-s="'+sec.id+'" data-i="'+it.id+'" data-v="0" data-b="1">NO</button>'+naBtn+'</div>';
+        } else if(it.t==='m'){
+          var naBtnM=it.na?('<button class="bb na" data-s="'+sec.id+'" data-i="'+it.id+'" data-v="-1" data-b="1">N/A</button>'):'';
+          row.innerHTML=txt+'<div class="bg" style="flex-wrap:wrap;gap:3px"><button class="bb no" data-s="'+sec.id+'" data-i="'+it.id+'" data-v="1" data-b="1">Muy mal</button><button class="bb no" data-s="'+sec.id+'" data-i="'+it.id+'" data-v="2" data-b="1" style="opacity:.7">Mal</button><button class="bb" data-s="'+sec.id+'" data-i="'+it.id+'" data-v="3" data-b="1">Regular</button><button class="bb si" data-s="'+sec.id+'" data-i="'+it.id+'" data-v="4" data-b="1" style="opacity:.7">Bien</button><button class="bb si" data-s="'+sec.id+'" data-i="'+it.id+'" data-v="5" data-b="1">Muy bien</button>'+naBtnM+'</div>';
+        } else {
+          var sk='<div class="sk">';
+          for(var v=1;v<=10;v++){sk+='<button class="sbb" data-s="'+sec.id+'" data-i="'+it.id+'" data-v="'+v+'" data-b="0">'+v+'</button>';}
+          if(it.na){sk+='<button class="bb na" style="margin-left:3px;font-size:10px" data-s="'+sec.id+'" data-i="'+it.id+'" data-v="-1" data-b="1">N/A</button>';}
+          sk+='</div>';
+          row.innerHTML=txt+sk;
+        }
+        sb.appendChild(row);
+      });
+      var nw=document.createElement('div');nw.className='nw';nw.innerHTML='<span class="nl">Observaciones</span><textarea class="ni" id="n'+sec.id+'" placeholder="Qué encontraste, acción a tomar..."></textarea>';
+      sb.appendChild(nw);
+      sd.appendChild(sb); bd.appendChild(sd);
+    });
+    ab.appendChild(bd);
+    var bc=document.createElement('div');bc.className='bc';
+    bc.innerHTML='<span class="bn">'+b.tt+'</span><div class="br"><span class="bs bd" id="bs'+b.id+'">--</span><span class="bm">/ '+b.w+'</span></div>';
+    rb.appendChild(bc);
+  });
+  // EVENT DELEGATION
+  document.getElementById('ab').addEventListener('click',function(e){
+    var btn=e.target.closest('[data-s]');
+    if(!btn)return;
+    setV(btn.dataset.s, btn.dataset.i, parseInt(btn.dataset.v), btn.dataset.b==='1');
+  });
+  document.getElementById('fe').value=new Date().toISOString().split('T')[0];
+}
+
+function toggleS(id){
+  var sb=document.getElementById('sb'+id), cv=document.getElementById('cv'+id);
+  var col=sb.classList.contains('col');
+  sb.classList.toggle('col',!col);
+  cv.classList.toggle('op',col);
+}
+
+function setV(sid,iid,val,isBool){
+  S[sid][iid]=val;
+  // Siempre limpiar todos los botones del item primero
+  document.querySelectorAll('[data-s="'+sid+'"][data-i="'+iid+'"]').forEach(function(b){
+    b.classList.remove('on','lo','mi','hi');
+  });
+  if(isBool){
+    document.querySelectorAll('[data-s="'+sid+'"][data-i="'+iid+'"]').forEach(function(b){
+      if(parseInt(b.dataset.v)===val)b.classList.add('on');
+    });
+  } else {
+    document.querySelectorAll('[data-s="'+sid+'"][data-i="'+iid+'"]').forEach(function(b){
+      if(parseInt(b.dataset.v)===val){
+        b.classList.add(val<=4?'lo':val<=7?'mi':'hi');
+      }
+    });
+  }
+  recalc();
+}
+
+function secSc(sec){
+  var e=0,m=0,a=0;
+  sec.its.forEach(function(it){
+    var v=S[sec.id][it.id];
+    if(v===-1){a++;return;}
+    m+=it.w;
+    if(v!==null){a++;e+=it.t==='b'?(v===1?it.w:0):it.t==='m'?(v===1?0:v===2?it.w*0.25:v===3?it.w*0.5:v===4?it.w*0.75:it.w):(v/10)*it.w;}
+  });
+  return{e:e,m:m,pct:m>0?Math.round(e/m*100):0,a:a,c:sec.its.length};
+}
+
+function blqSc(b){
+  var te=0,tm=0,ta=0,tc=0;
+  b.secs.forEach(function(s){var r=secSc(s);te+=r.e;tm+=r.m;ta+=r.a;tc+=r.c;});
+  return{pct:tm>0?Math.round(te/tm*100):0,sc:tm>0?(te/tm)*b.w:0,a:ta,c:tc};
+}
+
+function cl(p){return p>=80?'ok':p>=60?'md':'bd';}
+function cv(p){return p>=80?'ve':p>=60?'am':'ro';}
+
+function recalc(){
+  var tot=0,ta=0,tc=0;
+  D.forEach(function(b){
+    var r=blqSc(b);tot+=r.sc;ta+=r.a;tc+=r.c;
+    b.secs.forEach(function(s){
+      var sr=secSc(s);
+      var el=document.getElementById('sc'+s.id);
+      if(el){el.textContent=sr.a===0?'--':sr.pct+'%';el.className='sc '+(sr.a===0?'bd':cl(sr.pct));}
+    });
+    var be=document.getElementById('bs'+b.id);
+    if(be){be.textContent=r.a===0?'--':Math.round(r.sc);be.className='bs '+(r.a===0?'bd':cl(r.pct));}
+  });
+  var fin=Math.round(tot);
+  var td=document.getElementById('td');
+  td.textContent=ta===0?'-- / 100':fin+' / 100';
+  td.className='ts '+(ta===0?'ro':cv(fin));
+
+}
+
+// SUPABASE CONFIG
+var SB_URL='https://oidpwthycdjqwhiduutx.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pZHB3dGh5Y2RqcXdoaWR1dXR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMzYxOTQsImV4cCI6MjA4OTcxMjE5NH0.o9zimrjY0bHnjTJjekWBx0uQzYIzhQk-TIXeLprN97w';
+
+function sbFetch(method,path,body){
+  return fetch(SB_URL+'/rest/v1/'+path,{
+    method:method,
+    headers:{
+      'apikey':SB_KEY,
+      'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':'application/json',
+      'Prefer': method==='POST'?'return=representation':'',
+    },
+    body:body?JSON.stringify(body):undefined
+  });
+}
+
+// STORAGE — Supabase + localStorage como fallback
+function getH(){try{return JSON.parse(localStorage.getItem('ender_aud')||'[]');}catch(e){return[];}}
+function setH(h){localStorage.setItem('ender_aud',JSON.stringify(h));}
+
+async function getHRemoto(){
+  try{
+    var r=await sbFetch('GET','auditorias?order=fecha.desc,id.desc&limit=200');
+    if(!r.ok)return null;
+    var rows=await r.json();
+    if(!rows||!rows.length)return [];
+    // Parse each row safely
+    var result=[];
+    rows.forEach(function(row){
+      try{
+        if(row.data){
+          var parsed=JSON.parse(row.data);
+          result.push(parsed);
+        }
+      }catch(e){console.warn('Error parsing row',row.id,e);}
+    });
+    return result.length>0?result:null;
+  }catch(e){console.warn('getHRemoto error:',e);return null;}
+}
+
+async function guardarRemoto(rec){
+  var row={
+    fecha:rec.fecha,
+    local:rec.local,
+    turno:rec.turno,
+    total:rec.total,
+    app_id:rec.id,
+    desempeno:rec.bs.desempeno?rec.bs.desempeno.pts:null,
+    limpieza_cocina:rec.bs.limp_coc?rec.bs.limp_coc.pts:null,
+    limpieza_local:rec.bs.limp_loc?rec.bs.limp_loc.pts:null,
+    atencion:rec.bs.atencion?rec.bs.atencion.pts:null,
+    data:JSON.stringify(rec)
+  };
+  var r=await sbFetch('POST','auditorias',row);
+  return r.ok;
+}
+
+// GUARDAR
+function postGuardar(rec,ok){
+  var h=getH();h.unshift(rec);setH(h);
+  var btn=document.getElementById('bgrd');
+  btn.textContent=ok?'Guardado':'Guardado localmente';
+  btn.style.background=ok?'#16a34a':'#d97706';
+  btn.style.color='white';
+  btn.disabled=false;
+  setTimeout(function(){btn.textContent='Guardar auditoría';btn.style.background='';btn.style.color='';reset(true);},2500);
+}
+
+function guardar(){
+  var loc=document.getElementById('sl').value;
+  var fec=document.getElementById('fe').value;
+  var tur=document.getElementById('tu').value;
+  if(!loc||!fec||!tur){alert('Completá Local, Fecha y Turno antes de guardar.');return;}
+  var tot=0,bs={};
+  var secScores={};
+  D.forEach(function(b){
+    var r=blqSc(b);tot+=r.sc;bs[b.id]={pts:Math.round(r.sc),pct:r.pct,tt:b.tt,w:b.w};
+    b.secs.forEach(function(s){
+      var sr=secSc(s);
+      var its={};
+      s.its.forEach(function(it){its[it.id]={v:S[s.id][it.id],lb:it.lb,w:it.w,t:it.t};});
+      secScores[s.id]={pct:sr.pct,tt:s.tt,its:its};
+    });
+  });
+  var rec={id:Date.now(),fecha:fec,local:loc,turno:tur,total:Math.round(tot),bs:bs,secScores:secScores};
+  var btn=document.getElementById('bgrd');
+  btn.textContent='Guardando...';btn.disabled=true;
+  guardarRemoto(rec).then(function(ok){
+    postGuardar(rec,ok);
+  }).catch(function(){
+    postGuardar(rec,false);
+  });
+}
+
+// WHATSAPP
+function copiarWA(){
+  var loc=document.getElementById('sl').value||'Sin especificar';
+  var fec=document.getElementById('fe').value||'Sin fecha';
+  var tur=document.getElementById('tu').value||'Sin especificar';
+  var tot=0, msg='AUDITORIA OPERATIVA\n'+loc+' | '+tur+' | '+fec+'\n'+Array(27).join('-')+'\n';
+  D.forEach(function(b){
+    var r=blqSc(b);tot+=r.sc;
+    var pts=Math.round(r.sc);
+    var ico=r.a===0?'o':r.pct>=80?'OK':r.pct>=60?'(!!)':'(X)';
+    msg+='\n'+ico+' '+b.tt+': '+pts+'/'+b.w+' ('+r.pct+'%)\n';
+    b.secs.forEach(function(s){
+      var sr=secSc(s);
+      if(sr.a>0){
+        var si=sr.pct>=80?'OK':sr.pct>=60?'(!!)':'(X)';
+        msg+='  '+si+' '+s.tt+': '+sr.pct+'%\n';
+        var n=document.getElementById('n'+s.id);
+        if(n&&n.value.trim())msg+='     -> '+n.value.trim()+'\n';
+      }
+    });
+  });
+  var fin=Math.round(tot);
+  msg+='\n'+Array(27).join('-')+'\nTOTAL: '+fin+'/100\n';
+  msg+=fin>=80?'APROBADO':fin>=60?'REQUIERE MEJORAS':'ESTADO CRITICO';
+  var btn=document.querySelectorAll('.bse')[0];
+  if(navigator.clipboard){navigator.clipboard.writeText(msg).then(function(){var o=btn.textContent;btn.textContent='Copiado';setTimeout(function(){btn.textContent=o;},2000);});}
+  else{var ta=document.createElement('textarea');ta.value=msg;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
+}
+
+// RESET
+function reset(silent){
+  if(!silent&&!confirm('¿Borrar todos los datos?'))return;
+  D.forEach(function(b){b.secs.forEach(function(s){
+    s.its.forEach(function(i){
+      S[s.id][i.id]=null;
+      document.querySelectorAll('[data-s="'+s.id+'"][data-i="'+i.id+'"]').forEach(function(b){
+        b.classList.remove('on','lo','mi','hi');
+      });
+    });
+    var n=document.getElementById('n'+s.id);if(n)n.value='';
+  });});
+  document.getElementById('sl').value='';
+  document.getElementById('tu').value='';
+  document.getElementById('fe').value=new Date().toISOString().split('T')[0];
+  recalc();
+}
+
+// NAVEGACION
+function toggleMenu(){
+  document.getElementById('dropdown').classList.toggle('open');
+}
+
+function goR(){
+  document.getElementById('dropdown').classList.remove('open');
+  document.getElementById('p1').classList.remove('on');
+  document.getElementById('p2').classList.add('on');
+  window.scrollTo(0,0);
+  showTab('l');
+}
+function goA(){
+  document.getElementById('dropdown').classList.remove('open');
+  document.getElementById('p2').classList.remove('on');
+  document.getElementById('p1').classList.add('on');
+  window.scrollTo(0,0);
+}
+function showTab(t){
+  ['l','c','e'].forEach(function(x){
+    document.getElementById('t'+x).classList.toggle('on',t===x);
+    document.getElementById('v'+x).style.display=t===x?'block':'none';
+  });
+  if(t==='l')renderL();
+  if(t==='c')renderC();
+}
+
+// RENDER RESULTADOS
+var LOCS=['ENDER Quilmes','ENDER Bernal','ENDER Berazategui'];
+
+function renderTab(elId,renderFn){
+  var el=document.getElementById(elId);
+  el.innerHTML='<div class="em">Cargando...</div>';
+  getHRemoto().then(function(remoto){
+    var h=(remoto&&remoto.length>0)?remoto:getH();
+    renderFn(h,el);
+  }).catch(function(){renderFn(getH(),el);});
+}
+
+function renderL(){renderTab('vl',renderLData);}
+function renderC(){renderTab('vc',renderCData);}
+function renderLData(h,el){
+  el.innerHTML='';
+  if(h.length===0){el.innerHTML='<div class="em">No hay auditorías guardadas todavía.<br>Completá una auditoría y tocá<br><strong>Guardar auditoría</strong>.</div>';return;}
+  var wr=document.createElement('div');wr.className='rc';
+  LOCS.forEach(function(loc){
+    var aud=h.filter(function(a){return a.local===loc;});
+    var card=document.createElement('div');card.className='rcd';
+    if(aud.length===0){card.innerHTML='<div class="rcdh"><span class="rcdt">'+loc+'</span><span style="font-size:11px;color:var(--mu)">Sin auditorias</span></div>';wr.appendChild(card);return;}
+    var last=aud[0];var cv2=cv(last.total);
+    var html='<div class="rcdh"><span class="rcdt">'+loc+'</span><span class="rcds '+cv2+'">'+last.total+'</span></div>';
+    html+='<div class="bw">';
+    Object.values(last.bs).forEach(function(b){
+      var col=b.pct>=80?'#4ade80':b.pct>=60?'#fbbf24':'#f87171';
+      html+='<div class="br2"><div class="bl"><span>'+b.tt+'</span><span>'+b.pts+'/'+b.w+'</span></div><div class="bbg"><div class="bf" style="width:'+b.pct+'%;background:'+col+'"></div></div></div>';
+    });
+    html+='</div>';
+    html+='<div style="padding:6px 13px 3px;font-size:9px;color:var(--mu);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:.1em">Historial</div>';
+    aud.slice(0,8).forEach(function(a){
+      var c=cv(a.total);
+      html+='<div class="hr"><div><div class="hf">'+a.fecha+'</div><div class="hm">'+a.turno+'</div></div><div style="display:flex;align-items:center"><span class="hs '+c+'">'+a.total+'</span><button class="db" onclick="delA('+a.id+')">x</button></div></div>';
+    });
+    card.innerHTML=html;wr.appendChild(card);
+  });
+  el.appendChild(wr);
+}
+
+function renderCData(h,el){
+  el.innerHTML='';
+  if(h.length===0){el.innerHTML='<div class="em">No hay auditorías guardadas todavía.</div>';return;}
+  var grid=document.createElement('div');grid.className='cg';
+  LOCS.forEach(function(loc){
+    var last=h.find(function(a){return a.local===loc;});
+    var card=document.createElement('div');card.className='cc';
+    var nom=loc.replace('ENDER ','');
+    if(!last){card.innerHTML='<div class="cch"><div class="ccn">'+nom+'</div><span class="ccs" style="color:var(--mu);font-size:14px">--</span></div>';}
+    else{
+      var c=cv(last.total);
+      var html='<div class="cch"><div class="ccn">'+nom+'</div><span class="ccs '+c+'">'+last.total+'</span></div>';
+      Object.values(last.bs).forEach(function(b){
+        var col=b.pct>=80?'var(--green)':b.pct>=60?'var(--yellow)':'var(--red)';
+        var sh=b.tt.replace('Desempeno operativo','Desempeno').replace('Limpieza cocina','Limp. cocina').replace('Limpieza local','Limp. local').replace('Atencion al cliente','Atencion');
+        html+='<div class="cb"><span class="cbn">'+sh+'</span><span class="cbv" style="color:'+col+'">'+b.pts+'/'+b.w+'</span></div>';
+      });
+      card.innerHTML=html;
+    }
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+  var tw=document.createElement('div');tw.className='tw';
+  var thtml='<div class="tt">Promedio últimas 5 auditorías</div>';
+  LOCS.forEach(function(loc){
+    var aud=h.filter(function(a){return a.local===loc;}).slice(0,5);
+    if(!aud.length)return;
+    var avg=Math.round(aud.reduce(function(s,a){return s+a.total;},0)/aud.length);
+    var col=avg>=80?'#4ade80':avg>=60?'#fbbf24':'#f87171';
+    thtml+='<div class="trow"><div class="tlbl"><span style="color:var(--tx)">'+loc.replace('ENDER ','')+'</span><span style="font-family:DM Mono,monospace;color:'+col+'">'+avg+' pts ('+aud.length+' aud.)</span></div><div class="bbg"><div class="bf" style="width:'+avg+'%;background:'+col+'"></div></div></div>';
+  });
+  tw.innerHTML=thtml;el.appendChild(tw);
+}
+
+function delA(id){
+  if(!confirm('¿Eliminar esta auditoría?'))return;
+  setH(getH().filter(function(a){return a.id!==id;}));
+  sbFetch('DELETE','auditorias?app_id=eq.'+id).then(function(){
+    renderL();
+  }).catch(function(){
+    renderL();
+  });
+}
+
+build();
+recalc();
+</script>
+</body>
+</html>
