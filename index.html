@@ -286,17 +286,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 var D = [
   {id:'desempeno',tt:'Desempeño Operativo',w:43.50,cl:'#f5a623',secs:[
     {id:'planchero',tt:'Planchero',its:[
-      {id:'pl3',lb:'Aplicación de técnica smash',sb:'Presión firme en un solo movimiento',t:'m',w:4.00},
+      {id:'pl3',lb:'Aplicación de técnica smash',sb:'Tiempo, aplastado, forma, plancha sin costra',t:'m',w:4.00},
       {id:'pl1',lb:'Manejo de temperatura de plancha',sb:'Regula según el volumen del servicio',t:'m',w:3.75},
-      {id:'pl2',lb:'Raspado de superficie entre tandas',sb:'Sin que se lo recuerden',t:'m',w:2.50},
-      {id:'pl4',lb:'Control del límite de bolitas',sb:'Máximo 18 por plancha',t:'b',w:2.00},
+      {id:'pl2',lb:'Raspado de superficie entre tandas',sb:'Deja limpia la plancha entre tandas',t:'m',w:2.50},
+      {id:'pl4',lb:'Respeta el limite de bolitas',sb:'Máximo 18 por plancha',t:'b',w:2.00},
       {id:'pl6',lb:'Traslado de medallones en bandeja',t:'b',w:0.50}
     ]},
     {id:'armador',tt:'Armador',its:[
       {id:'ar1',lb:'Calidad de corte y tostado de panes',sb:'Parejo, con manteca clarificada, caliente',t:'m',w:3.75},
       {id:'ar2',lb:'Prolijidad y medida de toppings',sb:'Sin exceso ni faltante, dentro del pan',t:'m',w:3.50},
-      {id:'ar3',lb:'Prolijidad de envoltorio y etiqueta',t:'m',w:1.50},
-      {id:'ar5',lb:'Panes tostados sin acumular',t:'b',w:1.00}
+      {id:'ar3',lb:'Prolijidad de envoltorio y etiqueta',sb:'Envoltorio/etiqueta sin grasa y aclaraciones marcadas',t:'m',w:1.50},
+      {id:'ar5',lb:'Panes tostados sin acumular',sb:'No hay panes tostados acumulados en baja demanda',t:'b',w:1.00}
     ]},
     {id:'freidor',tt:'Freidor',its:[
       {id:'fr6',lb:'Calidad de rebozado Supremas/Chicken',sb:'Cobertura pareja, sin exceso ni faltante de harina',t:'m',w:2.50},
@@ -316,20 +316,20 @@ var D = [
       {id:'sh5',lb:'Uniforme de trabajo completo',t:'b',w:1.50}
     ]},
     {id:'produccion',tt:'Producción',its:[
-      {id:'pr2',lb:'Vegetales en condición',sb:'Lechuga y tomate frescos, limpios y listos',t:'b',w:1.50},
+      {id:'pr2',lb:'Vegetales en condición',sb:'Lechuga y tomate frescos',t:'b',w:1.50},
       {id:'pr3',lb:'Panceta: punto de cocción',sb:'Ni demasiado crocante ni gomosa',t:'m',w:1.50}
     ]}
   ]},
   {id:'limp_coc',tt:'Limpieza Cocina',w:21.50,cl:'#4ade80',hint:'Limpieza de estación evaluada en tiempos muertos durante el servicio',secs:[
     {id:'la',tt:'Armador',its:[
-      {id:'la1',lb:'Limpieza del puesto entre tandas',sb:'Mesada de armado, panes y regla de panes',t:'m',w:3.50}
+      {id:'la1',lb:'Limpieza del puesto entre tandas/tiempos muertos',sb:'Mesada de armado, panes y regla de panes',t:'m',w:3.50}
     ]},
     {id:'lp',tt:'Planchero',its:[
-      {id:'lp3',lb:'Limpieza del puesto entre tandas',sb:'Borde de plancha, heladera, grasero y bandejas',t:'m',w:3.00},
+      {id:'lp3',lb:'Limpieza del puesto entre tandas/tiempos muertos',sb:'Borde de plancha, heladera, grasero y bandejas',t:'m',w:3.00},
       {id:'lp2',lb:'Guardado de utensilios en su lugar',sb:'Smasher, espátulas, scraper, salero',t:'b',w:1.50}
     ]},
     {id:'lf',tt:'Freidor',its:[
-      {id:'lf2',lb:'Limpieza del puesto entre tandas',sb:'Bordes de freidoras, mantenedor, mesada de pollo',t:'m',w:2.00},
+      {id:'lf2',lb:'Limpieza del puesto entre tandas/tiempos muertos',sb:'Bordes de freidoras, mantenedor, mesada de pollo',t:'m',w:2.00},
       {id:'lf4',lb:'Traslado del pollo con bandeja y pinza',t:'b',w:1.50},
       {id:'lf5',lb:'Limpieza del aceite',sb:'Cuando hay restos en superficie',t:'b',w:1.50}
     ]},
